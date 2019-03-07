@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "rootDir": "src",
+        "outDir": "dist",
+        "strict": true,
+        "inlineSourceMap": true,
+        "inlineSources": true,
+        "lib": ["es2015"],
+        "types": ["node"],
+        "plugins": [
+            {
+                "name": "tslint-language-service",
+                "alwaysShowRuleFailuresAsWarnings": true,
+                "ignoreDefinitionFiles": true
+            }
+        ]
+    }
+}

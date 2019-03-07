@@ -1,0 +1,9 @@
+{
+    "cSpell.words": [
+        "APPVERSION",
+        "Lifecycle",
+        "recordset",
+        "simplr"
+    ],
+    "typescript.tsdk": "node_modules\\typescript\\lib"
+}

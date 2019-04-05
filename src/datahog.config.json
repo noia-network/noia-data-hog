@@ -1,7 +1,7 @@
 {
-    "user": "root",
-    "password": "",
+    "user": "user",
+    "password": "password",
     "host": "host",
     "port": "3306",
-    "database": "noia"
+    "database": "database-name"
 }

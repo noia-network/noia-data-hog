@@ -10,7 +10,7 @@ Build:
 
     npm run build
 
-Update `./datahog.config.json`.
+Update `./../datahog.config.json`.
 
 Start:
 

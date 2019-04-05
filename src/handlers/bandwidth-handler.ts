@@ -8,6 +8,8 @@ import { NodeEvents, BaseMessage } from "../contracts";
 
 export interface BandwidthEvent extends NodeEvent {
     contentId: string;
+    // Available for upload event.
+    contentDomain?: string;
     bytesCount: number;
     ip: string;
 }
@@ -94,11 +96,11 @@ export class BandwidthHandler extends DataHandler {
             case NodeEvents.BandwidthUpload: {
                 await this.insertRows(
                     group,
-                    "BandwidthUpload(id, nodeId, timestamp, type, bytesCount, contentId, ip)",
+                    "BandwidthUpload(id, nodeId, timestamp, type, bytesCount, contentId, contentDomain, ip)",
                     item =>
                         `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}', ${item.event.bytesCount}, '${
                             item.event.contentId
-                        }', '${item.event.ip}'),`
+                        }', '${item.event.contentDomain!}', '${item.event.ip}'),`
                 );
                 break;
             }

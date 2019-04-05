@@ -4,7 +4,7 @@ import { App } from "./app";
 
 async function main(): Promise<void> {
     let configJson: string;
-    const configPath = "./src/datahog.config.json";
+    const configPath = "./../datahog.config.json";
     console.info("Reading configuration...");
     try {
         const configBytes = await fs.readFile(configPath);

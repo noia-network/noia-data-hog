@@ -33,8 +33,10 @@ export interface StorageData extends NodeEvent {
     storageTotal: number;
     storageAvailable: number;
     storageUsed: number;
+    arch: string;
+    release: string;
+    platform: string;
     deviceType: string;
-    osVersion: string;
 }
 
 export interface BandwidthData extends NodeEvent {

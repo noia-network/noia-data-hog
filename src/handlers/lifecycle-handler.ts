@@ -104,13 +104,13 @@ export class LifecycleHandler extends DataHandler {
                     const storageMessages = (group as any) as StorageMessage[];
                     await this.insertRows<StorageData>(
                         storageMessages,
-                        "StorageStatistics(id, nodeId, timestamp, type, total, available, used, arch, release, platform, deviceType)",
+                        "StorageStatistics(id, nodeId, timestamp, type, total, available, used, arch, `release`, platform, deviceType)",
                         item =>
-                            `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${NodeEvents.Storage}', ${
+                            `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${NodeEvents.Storage}", ${
                                 item.event.storageTotal
-                            }, ${item.event.storageAvailable}, ${item.event.storageUsed}, ${item.event.arch},  ${item.event.release}, ${
-                                item.event.platform
-                            }, ${item.event.deviceType}),`
+                            }, ${item.event.storageAvailable}, ${item.event.storageUsed}, "${item.event.arch}",  "${
+                                item.event.release
+                            }", "${item.event.platform}", "${item.event.deviceType}"),`
                     );
                 }
                 if (key === NodeEvents.Metadata || key === NodeEvents.Bandwidth) {

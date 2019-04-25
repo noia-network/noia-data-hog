@@ -124,9 +124,9 @@ export class BandwidthHandler extends DataHandler {
                 await this.nodeUpdateRows(
                     group,
                     item =>
-                        `id='${uuid()}', bandwidthUploadBytesCount=bandwidthUploadBytesCount+${item.event.bytesCount} WHERE nodeId='${
-                            item.event.nodeId
-                        }'`
+                        `id='${uuid()}', bandwidthUploadBytesCount=bandwidthUploadBytesCount+${
+                            item.event.bytesCount
+                        }, bandwidthDownloadBytesCount=bandwidthDownloadBytesCount+0 WHERE nodeId='${item.event.nodeId}'`
                 );
                 break;
             }
@@ -134,9 +134,9 @@ export class BandwidthHandler extends DataHandler {
                 await this.nodeUpdateRows(
                     group,
                     item =>
-                        `id='${uuid()}', bandwidthDownloadBytesCount=bandwidthDownloadBytesCount+${item.event.bytesCount} WHERE nodeId='${
-                            item.event.nodeId
-                        }'`
+                        `id='${uuid()}', bandwidthUploadBytesCount=bandwidthUploadBytesCount+0, bandwidthDownloadBytesCount=bandwidthDownloadBytesCount+${
+                            item.event.bytesCount
+                        } WHERE nodeId='${item.event.nodeId}'`
                 );
             }
         }

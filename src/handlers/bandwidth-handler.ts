@@ -134,7 +134,7 @@ export class BandwidthHandler extends DataHandler {
                 await this.nodeUpdateRows(
                     group,
                     item =>
-                        `id='${uuid()}', bandwidthUploadBytesCount=bandwidthUploadBytesCount+0, 
+                        `id='${uuid()}', bandwidthUploadBytesCount=bandwidthUploadBytesCount+0,
                         bandwidthDownloadBytesCount=bandwidthDownloadBytesCount+${item.event.bytesCount} WHERE nodeId='${
                             item.event.nodeId
                         }'`

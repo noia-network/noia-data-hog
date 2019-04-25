@@ -148,14 +148,14 @@ export class BandwidthHandler extends DataHandler {
                 await this.nodeInsertRows(
                     group,
                     "nodestatistics(id, nodeId, bandwidthUploadBytesCount, bandwidthDownloadBytesCount)",
-                    item => `"${uuid()}","${item.event.nodeId}",${item.event.bytesCount}`
+                    item => `"${uuid()}","${item.event.nodeId}",${item.event.bytesCount}, 0`
                 );
             }
             case NodeEvents.bandwidthDownloadStatistics: {
                 await this.nodeInsertRows(
                     group,
                     "nodestatistics(id, nodeId, bandwidthUploadBytesCount, bandwidthDownloadBytesCount)",
-                    item => `"${uuid()}","${item.event.nodeId}",${item.event.bytesCount}`
+                    item => `"${uuid()}","${item.event.nodeId}", 0, ${item.event.bytesCount}`
                 );
             }
         }

@@ -21,8 +21,7 @@ export class DataHogMySql {
                     this.connectionPool = sql.createPool(this.config);
                 }
             }
-
-            this.connectionPool.query(q, (error, results, fields) => {
+            this.connectionPool.query(q, (error, results, _fields) => {
                 if (error) {
                     reject(error);
                     return;

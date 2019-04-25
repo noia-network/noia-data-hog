@@ -8,8 +8,6 @@ import { NodeEvents, BaseMessage } from "../contracts";
 
 export interface BandwidthEvent extends NodeEvent {
     contentId: string;
-    // Available for upload event.
-    contentDomain?: string;
     bytesCount: number;
     ip: string;
 }
@@ -36,14 +34,14 @@ export class BandwidthHandler extends DataHandler {
     }
 
     protected async calculateTotal(type: string, event: NodeEvent, socket: WebSocket): Promise<void> {
-        let table: string;
+        let column: string;
         switch (type) {
             case NodeEvents.BandwidthUploadTotal: {
-                table = "BandwidthUpload";
+                column = "bandwidthUploadBytesCount";
                 break;
             }
             case NodeEvents.BandwidthDownloadTotal: {
-                table = "BandwidthDownload";
+                column = "bandwidthDownloadBytesCount";
                 break;
             }
             default: {
@@ -51,14 +49,16 @@ export class BandwidthHandler extends DataHandler {
             }
         }
 
-        const query = `SELECT SUM(bytesCount) as bytesCount FROM \`${table}\` WHERE nodeId='${event.nodeId}' GROUP BY nodeId`;
-
+        const query = `SELECT ${column} FROM nodestatistics WHERE nodeId='${event.nodeId}'`;
         try {
             const result = await this.database.query(query);
 
             let bytesCount = 0;
-            if (Array.isArray(result) && result.length > 0 && result[0].bytesCount != null) {
-                bytesCount = result[0].bytesCount;
+            if (Array.isArray(result) && result.length > 0 && result[0].bandwidthUploadBytesCount != null) {
+                bytesCount = result[0].bandwidthUploadBytesCount;
+            }
+            if (Array.isArray(result) && result.length > 0 && result[0].bandwidthDownloadBytesCount != null) {
+                bytesCount = result[0].bandwidthDownloadBytesCount;
             }
 
             socket.send(
@@ -88,6 +88,8 @@ export class BandwidthHandler extends DataHandler {
         for (const key of keys) {
             const group = groups[key];
             await this.processEventGroup(group, key);
+            await this.processEventGroupUpdate(group, key);
+            await this.processEventGroupInsert(group, key);
         }
     }
 
@@ -96,11 +98,11 @@ export class BandwidthHandler extends DataHandler {
             case NodeEvents.BandwidthUpload: {
                 await this.insertRows(
                     group,
-                    "BandwidthUpload(id, nodeId, timestamp, type, bytesCount, contentId, contentDomain, ip)",
+                    "BandwidthUpload(id, nodeId, timestamp, type, bytesCount, contentId, ip)",
                     item =>
-                        `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}', ${item.event.bytesCount}, '${
+                        `('${uuid()}', '${item.event.nodeId}', '${item.event.timestamp}', '${item.type}', '${item.event.bytesCount}', '${
                             item.event.contentId
-                        }', '${item.event.contentDomain!}', '${item.event.ip}'),`
+                        }', '${item.event.ip}'),`
                 );
                 break;
             }
@@ -109,11 +111,51 @@ export class BandwidthHandler extends DataHandler {
                     group,
                     "BandwidthDownload(id, nodeId, timestamp, type, bytesCount, contentId, ip)",
                     item =>
-                        `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}', ${item.event.bytesCount}, '${
+                        `('${uuid()}', '${item.event.nodeId}', '${item.event.timestamp}', '${item.type}', '${item.event.bytesCount}', '${
                             item.event.contentId
                         }', '${item.event.ip}'),`
                 );
+            }
+        }
+    }
+    protected async processEventGroupUpdate<TMessage extends BaseMessage<BandwidthEvent>>(group: TMessage[], key: string): Promise<void> {
+        switch (key) {
+            case NodeEvents.bandwidthUploadStatistics: {
+                await this.nodeUpdateRows(
+                    group,
+                    item =>
+                        `id='${uuid()}', bandwidthUploadBytesCount=bandwidthUploadBytesCount+${item.event.bytesCount} WHERE nodeId='${
+                            item.event.nodeId
+                        }'`
+                );
                 break;
+            }
+            case NodeEvents.bandwidthDownloadStatistics: {
+                await this.nodeUpdateRows(
+                    group,
+                    item =>
+                        `id='${uuid()}', bandwidthDownloadBytesCount=bandwidthDownloadBytesCount+${item.event.bytesCount} WHERE nodeId='${
+                            item.event.nodeId
+                        }'`
+                );
+            }
+        }
+    }
+    protected async processEventGroupInsert<TMessage extends BaseMessage<BandwidthEvent>>(group: TMessage[], key: string): Promise<void> {
+        switch (key) {
+            case NodeEvents.bandwidthUploadStatistics: {
+                await this.nodeInsertRows(
+                    group,
+                    "nodestatistics(id, nodeId, bandwidthUploadBytesCount)",
+                    item => `"${uuid()}","${item.event.nodeId}",${item.event.bytesCount}`
+                );
+            }
+            case NodeEvents.bandwidthDownloadStatistics: {
+                await this.nodeInsertRows(
+                    group,
+                    "nodestatistics(id, nodeId, bandwidthDownloadBytesCount)",
+                    item => `"${uuid()}","${item.event.nodeId}",${item.event.bytesCount}`
+                );
             }
         }
     }

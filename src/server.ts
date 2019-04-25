@@ -1,3 +1,4 @@
+//import * as express from "express";
 import * as http from "http";
 import * as WebSocket from "ws";
 import { DataHogMessage } from "./contracts";
@@ -16,12 +17,14 @@ export interface NodeEvent {
 
 export class DataHogServer {
     private server: http.Server;
+    //protected app: express.Express;
     protected wss: WebSocket.Server;
 
     // tslint:disable-next-line:no-any
     protected eventHandlers: { [key: string]: DataHogHandler<any> } = {};
 
     constructor() {
+        //this.app = express();
         this.server = http.createServer();
         this.wss = new WebSocket.Server({ server: this.server });
         this.setupServer(this.wss);

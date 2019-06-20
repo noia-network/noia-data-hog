@@ -133,21 +133,15 @@ export class BandwidthHandler extends DataHandler {
         }
     }
     protected async processEventGroupInsert<TMessage extends BaseMessage<BandwidthEvent>>(group: TMessage[], key: string): Promise<void> {
-        switch (key) {
-            case NodeEvents.bandwidthUploadStatistics: {
-                await this.nodeInsertRows(
-                    group,
-                    "nodestatistics(id, nodeId, bandwidthUploadBytesCount, bandwidthDownloadBytesCount)",
-                    item => `"${uuid()}","${item.event.nodeId}",${item.event.bytesCount}, 0`
-                );
-            }
-            case NodeEvents.bandwidthDownloadStatistics: {
-                await this.nodeInsertRows(
-                    group,
-                    "nodestatistics(id, nodeId, bandwidthUploadBytesCount, bandwidthDownloadBytesCount)",
-                    item => `"${uuid()}","${item.event.nodeId}", 0, ${item.event.bytesCount}`
-                );
-            }
+        if (key === NodeEvents.BandwidthUploadStatistics || key === NodeEvents.BandwidthDownloadStatistics) {
+            await this.nodeInsertRows(
+                group,
+                "nodestatistics(id, nodeId, bandwidthUploadBytesCount, bandwidthDownloadBytesCount)",
+                item =>
+                    `nodestatistics(id='${uuid()}', nodeId='${item.event.nodeId}', bandwidthUploadBytesCount='${
+                        key === NodeEvents.BandwidthDownloadStatistics ? item.event.bytesCount : 0
+                    }', bandwidthDownloadBytesCount='${key === NodeEvents.BandwidthUploadStatistics ? item.event.bytesCount : 0}')`
+            );
         }
     }
 }

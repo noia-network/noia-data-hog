@@ -138,9 +138,9 @@ export class BandwidthHandler extends DataHandler {
                 group,
                 "nodestatistics(id, nodeId, bandwidthUploadBytesCount, bandwidthDownloadBytesCount)",
                 item =>
-                    `nodestatistics(id='${uuid()}', nodeId='${item.event.nodeId}', bandwidthUploadBytesCount='${
-                        key === NodeEvents.BandwidthUploadStatistics ? item.event.bytesCount : 0
-                    }', bandwidthDownloadBytesCount='${key === NodeEvents.BandwidthDownloadStatistics ? item.event.bytesCount : 0}')`
+                    `id='${uuid()}', '${item.event.nodeId}', ${key === NodeEvents.BandwidthUploadStatistics ? item.event.bytesCount : 0}, ${
+                        key === NodeEvents.BandwidthDownloadStatistics ? item.event.bytesCount : 0
+                    })`
             );
         }
     }

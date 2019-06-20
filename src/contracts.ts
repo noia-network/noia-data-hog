@@ -22,8 +22,8 @@ export const enum NodeEvents {
     ListWhitelistedClients = "node-list-whitelisted-clients",
     IsWhitelistedClient = "node-is-whitelisted-client",
     RemoveWhitelistedClient = "node-remove-whitelisted-client",
-    bandwidthUploadStatistics = "node-bandwidth-upload",
-    bandwidthDownloadStatistics = "node-bandwidth-download"
+    BandwidthUploadStatistics = "node-bandwidth-upload",
+    BandwidthDownloadStatistics = "node-bandwidth-download"
 }
 
 export interface BaseMessage<TEvent extends NodeEvent = NodeEvent> {

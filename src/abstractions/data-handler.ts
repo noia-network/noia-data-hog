@@ -48,17 +48,9 @@ export abstract class DataHandler {
         tableNameAndColumns: string,
         queryValuesConstructor: (item: TMessage) => string
     ): Promise<void> {
-//         let queryInsert = `INSERT INTO ${tableNameAndColumns} SELECT `;
-//         const queryInsert2 = ` AS tmp WHERE NOT EXISTS (SELECT nodeId FROM nodestatistics WHERE nodeId=`;
-//         const queryInsert3 = `) LIMIT 1;`;
-
-//         const items = queryValuesConstructor(data[0]).split(",");
-//         const queryIn = queryInsert + queryValuesConstructor(data[0]) + queryInsert2 + items[1] + queryInsert3;
-            
             let queryInsert = `INSERT INTO ${tableNameAndColumns} SELECT `;
             
             for (const item of data) {
-                const items = queryValuesConstructor(item).split(",");
                 queryInsert += items;
             }
 

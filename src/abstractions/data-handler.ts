@@ -46,19 +46,17 @@ export abstract class DataHandler {
     protected async nodeInsertRows<TData extends NodeEvent = NodeEvent, TMessage = BaseMessage<TData>>(
         data: TMessage[],
         tableNameAndColumns: string,
-        queryValuesConstructor: (item: TMessage) => string
+        queryValuesConstructor: (data: TMessage) => string
     ): Promise<void> {
         let queryInsert = `INSERT INTO ${tableNameAndColumns} SELECT `;
         const queryInsert2 = ` AS tmp WHERE NOT EXISTS (SELECT nodeId FROM nodestatistics WHERE nodeId=`;
         const queryInsert3 = `) LIMIT 1;`;
 
-        for (const item of data) {
-            const items = queryValuesConstructor(item).split(",");
-            queryInsert += items + queryInsert2 + items[1] + queryInsert3;
-        }
+        const items = queryValuesConstructor(data[0]).split(",");
+        const queryIn = queryInsert + queryValuesConstructor(data[0]) + queryInsert2 + items[1] + queryInsert3;
 
         try {
-            await this.database.query(queryInsert);
+            await this.database.query(queryIn);
         } catch (err) {
             // TODO: Handle errors
             console.error(err);

@@ -45,7 +45,18 @@ export class App {
             NodeEvents.BandwidthDownloadTotal,
             this.bandwidthHandler.getOutboundHandler(NodeEvents.BandwidthDownloadTotal)
         );
-
+        
+        // Nodestatistics events.
+        this.server.registerHandler(
+            NodeEvents.BandwidthUploadStatistics,
+            this.bandwidthHandler.getInboundHandler(NodeEvents.BandwidthUploadStatistics)
+        );
+        this.server.registerHandler(
+            NodeEvents.BandwidthDownloadStatistics,
+            this.bandwidthHandler.getInboundHandler(NodeEvents.BandwidthDownloadStatistics)
+        );
+        
+        // Whitelisted clients.
         this.server.registerHandler(
             NodeEvents.WhitelistClient,
             this.whitelistedClientsHandler.getNewWhitelistedClientHandler(NodeEvents.WhitelistClient)

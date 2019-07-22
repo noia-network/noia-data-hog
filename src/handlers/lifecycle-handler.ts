@@ -101,7 +101,6 @@ export class LifecycleHandler extends DataHandler {
             case NodeEvents.Metadata:
             case NodeEvents.Bandwidth:
             case NodeEvents.Network:
-            case NodeEvents.Network:
             case NodeEvents.Storage: {
                 if (key === NodeEvents.Metadata || key === NodeEvents.Storage) {
                     // tslint:disable-next-line:no-any

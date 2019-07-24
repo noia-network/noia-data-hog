@@ -24,10 +24,7 @@ export const enum NodeEvents {
     RemoveWhitelistedClient = "node-remove-whitelisted-client",
     BandwidthUploadStatistics = "node-bandwidth-upload",
     BandwidthDownloadStatistics = "node-bandwidth-download",
-    Network = "node-network",
-    System = "node-system",
-    ExternalIpv4 = "node-externalipv4",
-    ExternalIpv6 = "node-externalipv6"
+    Network = "node-network"
 }
 
 export interface BaseMessage<TEvent extends NodeEvent = NodeEvent> {
@@ -46,10 +43,11 @@ export interface NetworkData extends NodeEvent {
     duplex: string;
     mtu: number;
     speed: number;
-    interfacesLength: number;
     pingIpv6: boolean;
     ipv4: string;
     ipv6: string;
+    //tslint:disable-next-line
+    carrier_changes: string;
 }
 
 export interface StorageData extends NetworkData {
@@ -65,8 +63,6 @@ export interface StorageData extends NetworkData {
     iface: string;
     speed: number;
     mac: string;
-    interface: string;
-    interfacesLength: number;
     ipv4: string;
     ipv6: string;
 }

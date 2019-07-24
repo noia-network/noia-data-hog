@@ -31,9 +31,6 @@ export class App {
         this.server.registerHandler(NodeEvents.Bandwidth, this.lifecycleHandler.getHandler(NodeEvents.Bandwidth));
         this.server.registerHandler(NodeEvents.Metadata, this.lifecycleHandler.getHandler(NodeEvents.Metadata));
         this.server.registerHandler(NodeEvents.Network, this.lifecycleHandler.getHandler(NodeEvents.Network));
-        this.server.registerHandler(NodeEvents.System, this.lifecycleHandler.getHandler(NodeEvents.System));
-        this.server.registerHandler(NodeEvents.ExternalIpv4, this.lifecycleHandler.getHandler(NodeEvents.ExternalIpv4));
-        this.server.registerHandler(NodeEvents.ExternalIpv6, this.lifecycleHandler.getHandler(NodeEvents.ExternalIpv6));
 
         // Uptime events.
         this.server.registerHandler(NodeEvents.Uptime, this.uptimeHandler.getCalculateUptimeHandler());

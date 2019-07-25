@@ -46,8 +46,7 @@ export interface NetworkData extends NodeEvent {
     pingIpv6: boolean;
     ipv4: string;
     ipv6: string;
-    //tslint:disable-next-line
-    carrier_changes: string;
+    interfacesLength: number;
 }
 
 export interface StorageData extends NetworkData {
@@ -65,6 +64,7 @@ export interface StorageData extends NetworkData {
     mac: string;
     ipv4: string;
     ipv6: string;
+    interfacesLength: number;
 }
 
 export interface BandwidthData extends NodeEvent {

@@ -121,7 +121,7 @@ export class LifecycleHandler extends DataHandler {
                     await this.insertRows<NetworkData>(
                         networkMessages,
                         // tslint:disable-next-line:max-line-length
-                        "NodeInformation(id, nodeId, timestamp, arch, `release`, platform, distro, iface, ifaceName, ip4, ip6, ipv6Check, mac, internal, virtual, operstate, type, duplex, mtu, speed, interfaces)",
+                        "NodeInformation(id, nodeId, timestamp, arch, `release`, platform, distro, iface, ifaceName, ip4, ip6, ipv6Check, mac, internal, `virtual`, operstate, `type`, duplex, mtu, speed, interfaces)",
                         item =>
                             `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${item.event.arch}", "${
                                 item.event.release

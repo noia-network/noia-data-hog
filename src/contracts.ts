@@ -24,7 +24,8 @@ export const enum NodeEvents {
     RemoveWhitelistedClient = "node-remove-whitelisted-client",
     BandwidthUploadStatistics = "node-bandwidth-upload",
     BandwidthDownloadStatistics = "node-bandwidth-download",
-    Network = "node-network"
+    // Network = "node-network",
+    Network = "node-system"
 }
 
 export interface BaseMessage<TEvent extends NodeEvent = NodeEvent> {
@@ -33,38 +34,32 @@ export interface BaseMessage<TEvent extends NodeEvent = NodeEvent> {
 }
 
 export interface NetworkData extends NodeEvent {
-    iface: string;
-    ifaceName: string;
-    mac: string;
-    internal: boolean;
-    virtual: boolean;
-    operstate: string;
-    type: string;
-    duplex: string;
-    mtu: number;
-    speed: number;
-    pingIpv6: boolean;
-    ipv4: string;
-    ipv6: string;
-    interfacesLength: number;
+    deviceType?: string;
+    settingsVersion?: string;
+    platform?: string;
+    distro?: string;
+    release?: string;
+    arch?: string;
+    iface?: string;
+    ifaceName?: string;
+    mac?: string;
+    internal?: boolean;
+    virtual?: boolean;
+    operstate?: string;
+    type?: string;
+    duplex?: string;
+    mtu?: number;
+    speed?: number;
+    pingIpv6?: boolean;
+    ipv4?: string;
+    ipv6?: string;
+    interfacesLength?: number;
 }
 
-export interface StorageData extends NetworkData {
+export interface StorageData extends NodeEvent {
     storageTotal: number;
     storageAvailable: number;
     storageUsed: number;
-    deviceType: string;
-    settingsVersion: string;
-    platform: string;
-    distro: string;
-    release: string;
-    arch: string;
-    iface: string;
-    speed: number;
-    mac: string;
-    ipv4: string;
-    ipv6: string;
-    interfacesLength: number;
 }
 
 export interface BandwidthData extends NodeEvent {

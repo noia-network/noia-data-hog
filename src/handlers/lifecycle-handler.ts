@@ -108,17 +108,11 @@ export class LifecycleHandler extends DataHandler {
                     await this.insertRows<StorageData>(
                         storageMessages,
                         // tslint:disable-next-line:max-line-length
-                        "StorageStatistics(id, nodeId, timestamp, type, total, available, used, arch, `release`, platform, deviceType, nodeVersion, os, interfaces, ip4, ip6, iface, mac, speed)",
+                        "StorageStatistics(id, nodeId, timestamp, type, total, available, used)",
                         item =>
                             `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${NodeEvents.Storage}", ${
                                 item.event.storageTotal
-                            }, ${item.event.storageAvailable}, ${item.event.storageUsed}, "${item.event.arch}",  "${
-                                item.event.release
-                            }", "${item.event.platform}", "${item.event.deviceType}", "${item.event.settingsVersion}", "${
-                                item.event.distro
-                            }", ${item.event.interfacesLength}, "${item.event.ipv4}", "${item.event.ipv6}", "${item.event.iface}", "${
-                                item.event.mac
-                            }", ${item.event.speed}),`
+                            }, ${item.event.storageAvailable}, ${item.event.storageUsed}),`
                     );
                 }
                 if (key === NodeEvents.Metadata || key === NodeEvents.Network) {
@@ -127,15 +121,17 @@ export class LifecycleHandler extends DataHandler {
                     await this.insertRows<NetworkData>(
                         networkMessages,
                         // tslint:disable-next-line:max-line-length
-                        "NodeNetworkInfo(id, nodeId, timestamp, iface, ifaceName, ip4, ip6, ipv6Check, mac, internal, virtual, operstate, type, duplex, mtu, speed, interfaces)",
+                        "NodeInformation(id, nodeId, timestamp, arch, `release`, platform, distro, iface, ifaceName, ip4, ip6, ipv6Check, mac, internal, virtual, operstate, type, duplex, mtu, speed, interfaces)",
                         item =>
-                            `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${item.event.iface}", "${
-                                item.event.ifaceName
-                            }", "${item.event.ipv4}", "${item.event.ipv6}", ${item.event.pingIpv6}, "${item.event.mac}", ${
-                                item.event.internal
-                            }, ${item.event.virtual}, "${item.event.operstate}", "${item.event.type}", "${item.event.duplex}", ${
-                                item.event.mtu
-                            }, ${item.event.speed}, ${item.event.interfacesLength}),`
+                            `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${item.event.arch}", "${
+                                item.event.release
+                            }", "${item.event.platform}", "${item.event.distro}", "${item.event.iface}", "${item.event.ifaceName}", "${
+                                item.event.ipv4
+                            }", "${item.event.ipv6}", ${item.event.pingIpv6}, "${item.event.mac}", ${item.event.internal}, ${
+                                item.event.virtual
+                            }, "${item.event.operstate}", "${item.event.type}", "${item.event.duplex}", ${item.event.mtu}, ${
+                                item.event.speed
+                            }, ${item.event.interfacesLength}),`
                     );
                 }
                 if (key === NodeEvents.Metadata || key === NodeEvents.Bandwidth) {

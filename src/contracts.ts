@@ -24,7 +24,6 @@ export const enum NodeEvents {
     RemoveWhitelistedClient = "node-remove-whitelisted-client",
     BandwidthUploadStatistics = "node-bandwidth-upload",
     BandwidthDownloadStatistics = "node-bandwidth-download",
-    // Network = "node-network",
     Network = "node-system"
 }
 

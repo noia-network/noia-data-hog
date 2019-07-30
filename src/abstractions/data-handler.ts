@@ -30,7 +30,7 @@ export abstract class DataHandler {
         data: TMessage[],
         queryValuesConstructor: (item: TMessage) => string
     ): Promise<void> {
-        let queryUpdate = `UPDATE nodestatistics SET `;
+        let queryUpdate = `UPDATE Nodestatistics SET `;
 
         for (const item of data) {
             queryUpdate += queryValuesConstructor(item);

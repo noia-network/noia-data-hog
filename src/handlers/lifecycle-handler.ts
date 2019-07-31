@@ -6,7 +6,9 @@ import {
     StorageData,
     BaseMessage,
     AliveData,
-    AliveMessage
+    AliveMessage,
+    NetworkMessage,
+    NetworkData
 } from "../contracts";
 import { NodeEvent, DataHogHandler } from "../server";
 import { DataHogMySql } from "../database";
@@ -98,19 +100,38 @@ export class LifecycleHandler extends DataHandler {
             }
             case NodeEvents.Metadata:
             case NodeEvents.Bandwidth:
+            case NodeEvents.Network:
             case NodeEvents.Storage: {
                 if (key === NodeEvents.Metadata || key === NodeEvents.Storage) {
                     // tslint:disable-next-line:no-any
                     const storageMessages = (group as any) as StorageMessage[];
                     await this.insertRows<StorageData>(
                         storageMessages,
-                        "StorageStatistics(id, nodeId, timestamp, type, total, available, used, arch, `release`, platform, deviceType)",
+                        // tslint:disable-next-line:max-line-length
+                        "StorageStatistics(id, nodeId, timestamp, type, total, available, used)",
                         item =>
                             `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${NodeEvents.Storage}", ${
                                 item.event.storageTotal
-                            }, ${item.event.storageAvailable}, ${item.event.storageUsed}, "${item.event.arch}",  "${
+                            }, ${item.event.storageAvailable}, ${item.event.storageUsed}),`
+                    );
+                }
+                if (key === NodeEvents.Metadata || key === NodeEvents.Network) {
+                    // tslint:disable-next-line:no-any
+                    const networkMessages = (group as any) as NetworkMessage[];
+                    await this.insertRows<NetworkData>(
+                        networkMessages,
+                        // tslint:disable-next-line:max-line-length
+                        "NodeInformation(id, nodeId, timestamp, arch, `release`, platform, settingsVersion, distro, iface, ifaceName, ip4, ip6, ipv6Check, mac, internal, `virtual`, operstate, `type`, duplex, mtu, speed, interfaces)",
+                        item =>
+                            `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${item.event.arch}", "${
                                 item.event.release
-                            }", "${item.event.platform}", "${item.event.deviceType}"),`
+                            }", "${item.event.platform}", "${item.event.settingsVersion}", "${item.event.distro}", "${
+                                item.event.iface
+                            }", "${item.event.ifaceName}", "${item.event.ipv4}", "${item.event.ipv6}", ${item.event.pingIpv6}, "${
+                                item.event.mac
+                            }", ${item.event.internal}, ${item.event.virtual}, "${item.event.operstate}", "${item.event.type}", "${
+                                item.event.duplex
+                            }", ${item.event.mtu}, ${item.event.speed}, ${item.event.interfacesLength}),`
                     );
                 }
                 if (key === NodeEvents.Metadata || key === NodeEvents.Bandwidth) {

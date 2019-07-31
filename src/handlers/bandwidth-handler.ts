@@ -51,7 +51,7 @@ export class BandwidthHandler extends DataHandler {
             }
         }
 
-        const query = `SELECT ${column} FROM nodestatistics WHERE nodeId='${event.nodeId}'`;
+        const query = `SELECT ${column} FROM Nodestatistics WHERE nodeId='${event.nodeId}'`;
 
         try {
             const result = await this.database.query(query);
@@ -136,11 +136,11 @@ export class BandwidthHandler extends DataHandler {
         if (key === NodeEvents.BandwidthUploadStatistics || key === NodeEvents.BandwidthDownloadStatistics) {
             await this.nodeInsertRows(
                 group,
-                "nodestatistics(id, nodeId, bandwidthUploadBytesCount, bandwidthDownloadBytesCount)",
+                "Nodestatistics(id, nodeId, bandwidthUploadBytesCount, bandwidthDownloadBytesCount)",
                 item =>
                     `'${uuid()}', '${item.event.nodeId}', ${key === NodeEvents.BandwidthUploadStatistics ? item.event.bytesCount : 0}, ${
                         key === NodeEvents.BandwidthDownloadStatistics ? item.event.bytesCount : 0
-                    } AS tmp WHERE NOT EXISTS (SELECT nodeId FROM nodestatistics WHERE nodeId='${item.event.nodeId}') LIMIT 1;`
+                    } AS tmp WHERE NOT EXISTS (SELECT nodeId FROM Nodestatistics WHERE nodeId='${item.event.nodeId}') LIMIT 1;`
             );
         }
     }

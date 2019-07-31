@@ -30,6 +30,7 @@ export class App {
         this.server.registerHandler(NodeEvents.Storage, this.lifecycleHandler.getHandler(NodeEvents.Storage));
         this.server.registerHandler(NodeEvents.Bandwidth, this.lifecycleHandler.getHandler(NodeEvents.Bandwidth));
         this.server.registerHandler(NodeEvents.Metadata, this.lifecycleHandler.getHandler(NodeEvents.Metadata));
+        this.server.registerHandler(NodeEvents.Network, this.lifecycleHandler.getHandler(NodeEvents.Network));
 
         // Uptime events.
         this.server.registerHandler(NodeEvents.Uptime, this.uptimeHandler.getCalculateUptimeHandler());
@@ -45,7 +46,7 @@ export class App {
             NodeEvents.BandwidthDownloadTotal,
             this.bandwidthHandler.getOutboundHandler(NodeEvents.BandwidthDownloadTotal)
         );
-        
+
         // Nodestatistics events.
         this.server.registerHandler(
             NodeEvents.BandwidthUploadStatistics,
@@ -55,7 +56,7 @@ export class App {
             NodeEvents.BandwidthDownloadStatistics,
             this.bandwidthHandler.getInboundHandler(NodeEvents.BandwidthDownloadStatistics)
         );
-        
+
         // Whitelisted clients.
         this.server.registerHandler(
             NodeEvents.WhitelistClient,

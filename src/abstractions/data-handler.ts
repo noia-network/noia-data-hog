@@ -30,7 +30,7 @@ export abstract class DataHandler {
         data: TMessage[],
         queryValuesConstructor: (item: TMessage) => string
     ): Promise<void> {
-        let queryUpdate = `UPDATE nodestatistics SET `;
+        let queryUpdate = `UPDATE Nodestatistics SET `;
 
         for (const item of data) {
             queryUpdate += queryValuesConstructor(item);
@@ -48,11 +48,10 @@ export abstract class DataHandler {
         tableNameAndColumns: string,
         queryValuesConstructor: (item: TMessage) => string
     ): Promise<void> {
-            let queryInsert = `INSERT INTO ${tableNameAndColumns} SELECT `;
-            
-            for (const item of data) {
-                queryInsert += items;
-            }
+        let queryInsert = `INSERT INTO ${tableNameAndColumns} SELECT `;
+        for (const item of data) {
+            queryInsert += queryValuesConstructor(item);
+        }
 
         try {
             await this.database.query(queryInsert);

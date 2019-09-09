@@ -8,7 +8,9 @@ import {
     AliveData,
     AliveMessage,
     NetworkMessage,
-    NetworkData
+    NetworkData,
+    PingData,
+    PingMessage
 } from "../contracts";
 import { NodeEvent, DataHogHandler } from "../server";
 import { DataHogMySql } from "../database";
@@ -80,9 +82,8 @@ export class LifecycleHandler extends DataHandler {
                     const nodeIds = [];
                     for (const item of data) {
                         nodeIds.push(item.event.nodeId);
-                        query += `when nodeId = '${item.event.nodeId}' and parentTimestamp IS NOT NULL and parentTimestamp = ${
-                            item.event.parentTimestamp
-                        } then ${item.event.timestamp}  `;
+                        // tslint:disable-next-line:max-line-length
+                        query += `when nodeId = '${item.event.nodeId}' and parentTimestamp IS NOT NULL and parentTimestamp = ${item.event.parentTimestamp} then ${item.event.timestamp}  `;
                     }
                     query += `else timestamp end `;
                     query += `where nodeId in (${nodeIds.map(x => `'${x}'`).join(",")}) and type = 'node-alive' `;
@@ -101,6 +102,7 @@ export class LifecycleHandler extends DataHandler {
             case NodeEvents.Metadata:
             case NodeEvents.Bandwidth:
             case NodeEvents.Network:
+            case NodeEvents.Ping:
             case NodeEvents.Storage: {
                 if (key === NodeEvents.Metadata || key === NodeEvents.Storage) {
                     // tslint:disable-next-line:no-any
@@ -132,6 +134,19 @@ export class LifecycleHandler extends DataHandler {
                             }", ${item.event.internal}, ${item.event.virtual}, "${item.event.operstate}", "${item.event.type}", "${
                                 item.event.duplex
                             }", ${item.event.mtu}, ${item.event.speed}, ${item.event.interfacesLength}),`
+                    );
+                }
+                if (key === NodeEvents.Metadata || key === NodeEvents.Ping) {
+                    // tslint:disable-next-line:no-any
+                    const pingMessage = (group as any) as PingMessage[];
+                    await this.insertRows<PingData>(
+                        pingMessage,
+                        // tslint:disable-next-line:max-line-length
+                        "NodePing(id, timestamp, fromNodeId, fromIp, toNodeId, toIp, time, min, max, avg)",
+                        item =>
+                            `("${uuid()}", ${item.event.timestamp}, "${item.event.nodeId}", "${item.event.ipv4}", "${
+                                item.event.toNodeId
+                            }", "${item.event.host}", ${item.event.time}, ${item.event.min}, ${item.event.max}, ${item.event.avg}),`
                     );
                 }
                 if (key === NodeEvents.Metadata || key === NodeEvents.Bandwidth) {

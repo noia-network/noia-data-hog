@@ -27,7 +27,7 @@ export class DataHogMySql {
                     reject(error);
                     return;
                 }
-                console.info("The result is: ", results);
+                // console.info("The result is: ", results);
                 resolve(results);
             });
         });

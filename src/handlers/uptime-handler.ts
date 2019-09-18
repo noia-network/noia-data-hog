@@ -77,11 +77,10 @@ export class UptimeHandler {
 
                     if (session == null || session.end != null || session.start !== record.parentTimestamp) {
                         // Bad session, ignoring...
-                        console.warn(
-                            `Record '${record.id}' (${NodeEvents.Alive}) session hasn't been started since ${
-                                event.from
-                            } (either started before or it's a bad data).`
-                        );
+                        // console.warn(
+                        // tslint:disable-next-line:max-line-length
+                        //     `Record '${record.id}' (${NodeEvents.Alive}) session hasn't been started since ${event.from} (either started before or it's a bad data).`
+                        // );
                         continue;
                     }
 

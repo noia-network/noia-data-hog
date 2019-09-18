@@ -31,6 +31,7 @@ export class App {
         this.server.registerHandler(NodeEvents.Bandwidth, this.lifecycleHandler.getHandler(NodeEvents.Bandwidth));
         this.server.registerHandler(NodeEvents.Metadata, this.lifecycleHandler.getHandler(NodeEvents.Metadata));
         this.server.registerHandler(NodeEvents.Network, this.lifecycleHandler.getHandler(NodeEvents.Network));
+        this.server.registerHandler(NodeEvents.Ping, this.lifecycleHandler.getHandler(NodeEvents.Ping));
 
         // Uptime events.
         this.server.registerHandler(NodeEvents.Uptime, this.uptimeHandler.getCalculateUptimeHandler());

@@ -24,12 +24,23 @@ export const enum NodeEvents {
     RemoveWhitelistedClient = "node-remove-whitelisted-client",
     BandwidthUploadStatistics = "node-bandwidth-upload",
     BandwidthDownloadStatistics = "node-bandwidth-download",
-    Network = "node-system"
+    Network = "node-system",
+    Ping = "node-ping"
 }
 
 export interface BaseMessage<TEvent extends NodeEvent = NodeEvent> {
     event: TEvent;
     type: string;
+}
+
+export interface PingData extends NodeEvent {
+    toNodeId: string;
+    host: string;
+    time: number;
+    min: number;
+    max: number;
+    avg: number;
+    ipv4: string;
 }
 
 export interface NetworkData extends NodeEvent {
@@ -71,6 +82,7 @@ export interface AliveData extends NodeEvent {
     parentTimestamp: number;
 }
 
+export interface PingMessage extends BaseMessage<PingData> {}
 export interface NetworkMessage extends BaseMessage<NetworkData> {}
 export interface StorageMessage extends BaseMessage<StorageData> {}
 export interface BandwidthMessage extends BaseMessage<BandwidthData> {}

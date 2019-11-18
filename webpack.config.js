@@ -40,7 +40,7 @@ module.exports = {
         new CopyWebpackPlugin([
             {
                 from: path.resolve(__dirname, "web.config"),
-                toType: "file"
+                to: "file"
             }
         ]),
         new webpack.DefinePlugin({

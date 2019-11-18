@@ -1,4 +1,4 @@
-import * as sql from "mysql";
+import sql from "mysql";
 import { DataHogServer } from "./server";
 import { DataHogMySql } from "./database";
 import { NodeEvents } from "./contracts";

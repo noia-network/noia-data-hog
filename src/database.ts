@@ -1,4 +1,4 @@
-import * as sql from "mysql";
+import sql from "mysql";
 
 export class DataHogMySql {
     protected connectionPool: sql.Pool | undefined = undefined;

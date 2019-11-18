@@ -1,19 +1,15 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "module": "commonjs",
+        "target": "es6",
         "rootDir": "src",
         "outDir": "dist",
         "strict": true,
+        "esModuleInterop": true,
         "inlineSourceMap": true,
         "inlineSources": true,
-        "lib": ["es2015"],
-        "types": ["node"],
-        "plugins": [
-            {
-                "name": "tslint-language-service",
-                "alwaysShowRuleFailuresAsWarnings": true,
-                "ignoreDefinitionFiles": true
-            }
-        ]
-    }
+        "lib": ["dom", "es7"],
+        "types": ["node"]
+    },
+    "include": ["src/**/*"]
 }

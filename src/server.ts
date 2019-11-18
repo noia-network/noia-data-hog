@@ -1,6 +1,7 @@
-import * as http from "http";
-import * as WebSocket from "ws";
+import http from "http";
+import WebSocket from "ws";
 import { DataHogMessage } from "./contracts";
+import { logger } from "./logger";
 
 export type DataHogHandler<TEvent extends NodeEvent> = (event: TEvent, socket: WebSocket) => void | Promise<void>;
 
@@ -33,7 +34,7 @@ export class DataHogServer {
 
     public listen(port: number): void {
         this.server.listen(port, () => {
-            console.debug("Server is listening on port", port);
+            logger.debug(`Server is listening on port ${port}`);
         });
     }
 
@@ -51,10 +52,11 @@ export class DataHogServer {
                     await result;
                 }
             } catch (err) {
-                console.error(err);
+                logger.error(err);
             }
         } else {
             // TODO: Handle error
+            logger.error(`Got non-function server event handler: ${handler}`);
             throw new Error(`Got non-function server event handler: ${handler}`);
         }
     }
@@ -63,9 +65,9 @@ export class DataHogServer {
         server.on("connection", (socket: WebSocket) => {
             const address = server.address();
             if (typeof address === "string") {
-                console.debug(address);
+                logger.debug(address);
             } else {
-                console.debug(`Connection received from: ${address.address}:${address.port} (${address.family}).`);
+                logger.debug(`Connection received from: ${address.address}:${address.port} (${address.family}).`);
             }
 
             // Communication session heartbeat.
@@ -80,6 +82,7 @@ export class DataHogServer {
             const interval = setInterval(() => {
                 if (isAlive === false) {
                     if (socket == null) {
+                        logger.error("Socket is null.");
                         throw new Error("Socket is null.");
                     }
                     clearInterval(interval);
@@ -90,21 +93,21 @@ export class DataHogServer {
             }, 10_000);
 
             socket.on("error", error => {
-                console.error(error);
+                logger.error(error);
             });
 
-            socket.on("close", (code, reason) => {
-                console.warn(`Connection closed with a code '${code}' and a reason: ${reason}.`);
+            socket.on("close", (code: any, reason: any) => {
+                logger.warn(`Connection closed with a code '${code}' and a reason: ${reason}.`);
             });
 
             socket.on("message", (message: string) => {
-                console.debug("Got message.", message);
+                logger.debug(`Got message. ${message}`);
                 try {
                     const dataHogMessage: DataHogMessage = JSON.parse(message);
                     this.handleEvent(dataHogMessage, socket);
                 } catch (err) {
                     // TODO: Handle errors.
-                    console.error(err);
+                    logger.error(err);
                     try {
                         socket.send(
                             JSON.stringify({

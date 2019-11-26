@@ -1,13 +1,13 @@
-import * as logdna from "logdna";
+import logdna from "logdna";
 
 const options = {
-    hostname: "Data-Hog-Docker",
+    hostname: "DATA-HOG",
     ip: "0.0.0.0",
-    app: "DataHog",
-    env: "Prod",
     index_meta: true,
     handleExceptions: true,
-    tags: "DataHog"
+    tags: "DataHog",
+    app: "DataHog",
+    env: "Prod"
 };
 
 export let logger = logdna.setupDefaultLogger("log-dna-key", options);

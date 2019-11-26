@@ -1,4 +1,4 @@
-import * as WebSocket from "ws";
+import WebSocket from "ws";
 
 const ADDRESS = "ws://localhost:8181";
 

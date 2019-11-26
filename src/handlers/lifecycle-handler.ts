@@ -62,12 +62,12 @@ export class LifecycleHandler extends DataHandler {
             case NodeEvents.Connected: {
                 await this.insertRows(
                     group,
-                    "LifetimeEvents(id, nodeId, timestamp, type)",
-                    item => `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}'),`
+                    "LifetimeEvents(id, nodeId, `timestamp`, `type`, parentTimestamp)",
+                    item => `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}', NULL),`
                 );
                 await this.insertRows(
                     group,
-                    "LifetimeEvents(id, nodeId, timestamp, type, parentTimestamp)",
+                    "LifetimeEvents(id, nodeId, `timestamp`, `type`, parentTimestamp)",
                     item =>
                         `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${NodeEvents.Alive}', ${item.event.timestamp}),`
                 );
@@ -77,16 +77,16 @@ export class LifecycleHandler extends DataHandler {
                 // tslint:disable-next-line:no-any
                 const aliveMessages = (group as any) as AliveMessage[];
                 await this.executeQuery<AliveData>(aliveMessages, data => {
-                    let query = "update LifetimeEvents set timestamp = case ";
+                    let query = "UPDATE LifetimeEvents SET `timestamp` = case ";
 
                     const nodeIds = [];
                     for (const item of data) {
                         nodeIds.push(item.event.nodeId);
                         // tslint:disable-next-line:max-line-length
-                        query += `when nodeId = '${item.event.nodeId}' and parentTimestamp IS NOT NULL and parentTimestamp = ${item.event.parentTimestamp} then ${item.event.timestamp}  `;
+                        query += `WHEN nodeId='${item.event.nodeId}' AND parentTimestamp IS NOT NULL AND parentTimestamp=${item.event.parentTimestamp} THEN ${item.event.timestamp} `;
                     }
-                    query += `else timestamp end `;
-                    query += `where nodeId in (${nodeIds.map(x => `'${x}'`).join(",")}) and type = 'node-alive' `;
+                    query += `ELSE \`timestamp\` END `;
+                    query += `WHERE nodeId in (${nodeIds.map(x => `'${x}'`).join(",")}) and \`type\` = 'node-alive' `;
                     return query;
                 });
                 break;
@@ -94,8 +94,8 @@ export class LifecycleHandler extends DataHandler {
             case NodeEvents.Disconnected: {
                 await this.insertRows(
                     group,
-                    "LifetimeEvents(id, nodeId, timestamp, type)",
-                    item => `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}'),`
+                    "LifetimeEvents(id, nodeId, `timestamp`, `type`, parentTimestamp)",
+                    item => `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}', NULL),`
                 );
                 break;
             }
@@ -110,9 +110,9 @@ export class LifecycleHandler extends DataHandler {
                     await this.insertRows<StorageData>(
                         storageMessages,
                         // tslint:disable-next-line:max-line-length
-                        "StorageStatistics(id, nodeId, timestamp, type, total, available, used)",
+                        "StorageStatistics(id, nodeId, `timestamp`, `type`, total, available, used)",
                         item =>
-                            `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${NodeEvents.Storage}", ${
+                            `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${NodeEvents.Storage}', ${
                                 item.event.storageTotal
                             }, ${item.event.storageAvailable}, ${item.event.storageUsed}),`
                     );
@@ -123,17 +123,17 @@ export class LifecycleHandler extends DataHandler {
                     await this.insertRows<NetworkData>(
                         networkMessages,
                         // tslint:disable-next-line:max-line-length
-                        "NodeInformation(id, nodeId, timestamp, arch, `release`, platform, settingsVersion, distro, iface, ifaceName, ip4, ip6, ipv6Check, mac, internal, `virtual`, operstate, `type`, duplex, mtu, speed, interfaces)",
+                        "NodeInformation(id, nodeId, `timestamp`, arch, `release`, platform, settingsVersion, distro, iface, ifaceName, ip4, ip6, ipv6Check, mac, internal, `virtual`, operstate, `type`, duplex, mtu, speed, interfaces)",
                         item =>
-                            `("${uuid()}", "${item.event.nodeId}", ${item.event.timestamp}, "${item.event.arch}", "${
+                            `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.event.arch}', '${
                                 item.event.release
-                            }", "${item.event.platform}", "${item.event.settingsVersion}", "${item.event.distro}", "${
+                            }', '${item.event.platform}', '${item.event.settingsVersion}', '${item.event.distro}', '${
                                 item.event.iface
-                            }", "${item.event.ifaceName}", "${item.event.ipv4}", "${item.event.ipv6}", ${item.event.pingIpv6}, "${
+                            }', '${item.event.ifaceName}', '${item.event.ipv4}', '${item.event.ipv6}', ${item.event.pingIpv6}, '${
                                 item.event.mac
-                            }", ${item.event.internal}, ${item.event.virtual}, "${item.event.operstate}", "${item.event.type}", "${
+                            }', ${item.event.internal}, ${item.event.virtual}, '${item.event.operstate}', '${item.event.type}', '${
                                 item.event.duplex
-                            }", ${item.event.mtu}, ${item.event.speed}, ${item.event.interfacesLength}),`
+                            }', ${item.event.mtu}, ${item.event.speed}, ${item.event.interfacesLength}),`
                     );
                 }
                 if (key === NodeEvents.Metadata || key === NodeEvents.Ping) {
@@ -142,11 +142,11 @@ export class LifecycleHandler extends DataHandler {
                     await this.insertRows<PingData>(
                         pingMessage,
                         // tslint:disable-next-line:max-line-length
-                        "NodePing(id, timestamp, fromNodeId, fromIp, toNodeId, toIp, time, min, max, avg)",
+                        "NodePing(id, `timestamp`, fromNodeId, fromIp, toNodeId, toIp, time, min, max, avg)",
                         item =>
-                            `("${uuid()}", ${item.event.timestamp}, "${item.event.nodeId}", "${item.event.ipv4}", "${
+                            `('${uuid()}', ${item.event.timestamp}, '${item.event.nodeId}', '${item.event.ipv4}', '${
                                 item.event.toNodeId
-                            }", "${item.event.host}", ${item.event.time}, ${item.event.min}, ${item.event.max}, ${item.event.avg}),`
+                            }', '${item.event.host}', ${item.event.time}, ${item.event.min}, ${item.event.max}, ${item.event.avg}),`
                     );
                 }
                 if (key === NodeEvents.Metadata || key === NodeEvents.Bandwidth) {
@@ -154,7 +154,7 @@ export class LifecycleHandler extends DataHandler {
                     const bandwidthMessages = (group as any) as BandwidthMessage[];
                     await this.insertRows<BandwidthData>(
                         bandwidthMessages,
-                        "BandwidthStatistics(id, nodeId, timestamp, type, upload, download, latency)",
+                        "BandwidthStatistics(id, nodeId, `timestamp`, `type`, upload, download, latency)",
                         item =>
                             `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${NodeEvents.Bandwidth}', ${
                                 item.event.bandwidthUpload

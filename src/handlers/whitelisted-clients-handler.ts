@@ -1,10 +1,11 @@
-import * as WebSocket from "ws";
+import WebSocket from "ws";
 import { v4 as uuid } from "uuid";
 import { Batch } from "../abstractions/batch";
 import { DataHandler } from "../abstractions/data-handler";
 import { DataHogMySql } from "../database";
 import { NodeEvent, DataHogHandler } from "../server";
 import { NodeEvents, BaseMessage } from "../contracts";
+import { logger } from "../logger";
 
 export interface WhitelistedClientsEvent extends NodeEvent {
     name: string;
@@ -45,7 +46,7 @@ export class WhitelistedClientsHandler extends DataHandler {
     }
 
     protected async listWhitelisted(type: string, event: NodeEvent, socket: WebSocket): Promise<void> {
-        const query = `SELECT * FROM \`WhitelistedClients\``;
+        const query = `SELECT * FROM WhitelistedClients`;
 
         try {
             const result = await this.database.query(query);
@@ -59,12 +60,12 @@ export class WhitelistedClientsHandler extends DataHandler {
             );
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
 
     protected async isWhitelisted(type: string, event: NodeEvent, socket: WebSocket): Promise<void> {
-        const query = `SELECT * FROM \`WhitelistedClients\` WHERE nodeId = '${event.nodeId}' LIMIT 1`;
+        const query = `SELECT * FROM WhitelistedClients WHERE nodeId = '${event.nodeId}' LIMIT 1`;
 
         try {
             const result = await this.database.query(query);
@@ -83,7 +84,7 @@ export class WhitelistedClientsHandler extends DataHandler {
             );
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
 
@@ -94,13 +95,13 @@ export class WhitelistedClientsHandler extends DataHandler {
         }
 
         // @ts-ignore
-        const query = `DELETE FROM \`WhitelistedClients\` WHERE name = '${event.name}'`;
+        const query = `DELETE FROM WhitelistedClients WHERE name = '${event.name}'`;
 
         try {
             await this.database.query(query);
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
 
@@ -125,15 +126,12 @@ export class WhitelistedClientsHandler extends DataHandler {
         group: TMessage[],
         key: string
     ): Promise<void> {
-        switch (key) {
-            case NodeEvents.WhitelistClient: {
-                await this.insertRows(
-                    group,
-                    "WhitelistedClients(id, name, nodeId)",
-                    item => `('${uuid()}', '${item.event.name}', '${item.event.nodeId}'),`
-                );
-                break;
-            }
+        if (key === NodeEvents.WhitelistClient) {
+            await this.insertRows(
+                group,
+                "WhitelistedClients(id, name, nodeId)",
+                item => `('${uuid()}', '${item.event.name}', '${item.event.nodeId}'),`
+            );
         }
     }
 }

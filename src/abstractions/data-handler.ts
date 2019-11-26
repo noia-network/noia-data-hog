@@ -1,6 +1,7 @@
 import { NodeEvent } from "../server";
 import { BaseMessage } from "../contracts";
 import { DataHogMySql } from "../database";
+import { logger } from "../logger";
 
 export abstract class DataHandler {
     constructor(protected database: DataHogMySql) {}
@@ -23,7 +24,7 @@ export abstract class DataHandler {
             await this.database.query(query);
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
     protected async nodeUpdateRows<TData extends NodeEvent = NodeEvent, TMessage = BaseMessage<TData>>(
@@ -40,7 +41,7 @@ export abstract class DataHandler {
             await this.database.query(queryUpdate);
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
     protected async nodeInsertRows<TData extends NodeEvent = NodeEvent, TMessage = BaseMessage<TData>>(
@@ -57,7 +58,7 @@ export abstract class DataHandler {
             await this.database.query(queryInsert);
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
     protected async executeQuery<TData extends NodeEvent = NodeEvent, TMessage = BaseMessage<TData>>(
@@ -70,7 +71,7 @@ export abstract class DataHandler {
             await this.database.query(query);
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
 }

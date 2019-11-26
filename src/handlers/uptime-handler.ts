@@ -1,7 +1,8 @@
 import { DataHogMySql } from "../database";
 import { NodeEvent, DataHogHandler } from "../server";
-import * as WebSocket from "ws";
+import WebSocket from "ws";
 import { NodeEvents } from "../contracts";
+import { logger } from "../logger";
 
 export interface UptimeEvent extends NodeEvent {
     from: number;
@@ -37,8 +38,8 @@ export class UptimeHandler {
     }
 
     protected async calculateUptime(event: UptimeEvent, socket: WebSocket): Promise<void> {
-        let previousSessionQuery = `SELECT id, nodeId, timestamp, type, parentTimestamp FROM \`LifetimeEvents\``;
-        previousSessionQuery += ` WHERE nodeId = '${event.nodeId}' AND timestamp <= ${event.from} LIMIT 1`;
+        let previousSessionQuery = `SELECT id, nodeId, \`timestamp\`, \`type\`, parentTimestamp FROM LifetimeEvents`;
+        previousSessionQuery += ` WHERE nodeId='${event.nodeId}' AND \`timestamp\` <= ${event.from} LIMIT 1`;
 
         const previousSessionResult = await this.database.query(previousSessionQuery);
 
@@ -52,14 +53,14 @@ export class UptimeHandler {
             sessionsFrom = previousSession.timestamp;
         }
 
-        let query = `SELECT id, nodeId, timestamp, type, parentTimestamp FROM \`LifetimeEvents\``;
-        query += ` WHERE nodeId = '${event.nodeId}' AND timestamp >= ${sessionsFrom}`;
+        let query = "SELECT id, nodeId, `timestamp`, `type`, parentTimestamp FROM LifetimeEvents";
+        query += ` WHERE nodeId='${event.nodeId}' AND \`timestamp\` >= ${sessionsFrom}`;
 
         if (event.to != null) {
-            query += ` AND timestamp <= ${event.to}`;
+            query += ` AND \`timestamp\` <= ${event.to}`;
         }
 
-        query += ` ORDER BY timestamp`;
+        query += " ORDER BY `timestamp`";
 
         const result = await this.database.query(query);
         const sessions: Session[] = [];
@@ -92,7 +93,7 @@ export class UptimeHandler {
 
                     if (session == null) {
                         // Bad session, ignoring...
-                        console.warn(`Record '${record.id}' (${NodeEvents.Alive}) doesn't have previous session since ${event.from}.`);
+                        logger.warn(`Record '${record.id}' (${NodeEvents.Alive}) doesn't have previous session since ${event.from}.`);
                         continue;
                     }
 
@@ -139,6 +140,7 @@ export class UptimeHandler {
         };
 
         socket.send(JSON.stringify(duration));
+        // }
     }
 
     protected calculateSessionUptime(session: RequiredSession, from: number, to?: number): number {

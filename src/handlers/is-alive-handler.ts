@@ -1,7 +1,8 @@
-import * as WebSocket from "ws";
+import WebSocket from "ws";
 import { DataHandler } from "../abstractions/data-handler";
 import { DataHogMySql } from "../database";
 import { NodeEvent, DataHogHandler } from "../server";
+import { logger } from "../logger";
 
 export interface IsAliveEvent extends NodeEvent {
     isAlive: boolean;
@@ -22,7 +23,7 @@ export class IsAliveHandler extends DataHandler {
     }
 
     protected async isAlive(type: string, event: NodeEvent, socket: WebSocket): Promise<void> {
-        const queryOne = `SELECT * FROM \`LifetimeEvents\` WHERE nodeId='${event.nodeId}' ORDER BY timestamp DESC LIMIT 2`;
+        const queryOne = `SELECT * FROM LifetimeEvents WHERE nodeId='${event.nodeId}' ORDER BY \`timestamp\` DESC LIMIT 2`;
 
         try {
             const resultOne = await this.database.query(queryOne);
@@ -45,11 +46,12 @@ export class IsAliveHandler extends DataHandler {
             let isAlive: boolean = false;
             if (!markedAsDisconnected) {
                 // tslint:disable-next-line:max-line-length
-                const queryTwo = `SELECT * FROM \`LifetimeEvents\` WHERE type IN ('node-alive', 'node-connected') AND nodeId='${
+                const queryTwo = `SELECT * FROM LifetimeEvents WHERE type IN ('node-alive', 'node-connected') AND nodeId='${
                     event.nodeId
                     // @ts-ignore
                 }' AND ROUND(timestamp/1000) >= UNIX_TIMESTAMP(NOW() - INTERVAL ${parseInt(event.minutesOffline) ||
-                    MINUTES_OFFLINE} MINUTE) ORDER BY timestamp DESC LIMIT 1`;
+                    MINUTES_OFFLINE} MINUTE) ORDER BY \`timestamp\` DESC LIMIT 1`;
+
                 const resultTwo = await this.database.query(queryTwo);
                 if (resultTwo != null && Array.isArray(resultTwo) && resultTwo.length > 0) {
                     isAlive = true;
@@ -65,7 +67,7 @@ export class IsAliveHandler extends DataHandler {
             );
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
 }

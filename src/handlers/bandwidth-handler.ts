@@ -1,10 +1,11 @@
-import * as WebSocket from "ws";
+import WebSocket from "ws";
 import { v4 as uuid } from "uuid";
 import { Batch } from "../abstractions/batch";
 import { DataHandler } from "../abstractions/data-handler";
 import { DataHogMySql } from "../database";
 import { NodeEvent, DataHogHandler } from "../server";
 import { NodeEvents, BaseMessage } from "../contracts";
+import { logger } from "../logger";
 
 export interface BandwidthEvent extends NodeEvent {
     contentId: string;
@@ -47,6 +48,7 @@ export class BandwidthHandler extends DataHandler {
                 break;
             }
             default: {
+                logger.error(`Event '${type}' is not compatible with a method 'calculateTotal'.`);
                 throw new Error(`Event '${type}' is not compatible with a method 'calculateTotal'.`);
             }
         }
@@ -70,7 +72,7 @@ export class BandwidthHandler extends DataHandler {
             );
         } catch (err) {
             // TODO: Handle errors
-            console.error(err);
+            logger.error(err);
         }
     }
 
@@ -98,18 +100,18 @@ export class BandwidthHandler extends DataHandler {
             case NodeEvents.BandwidthUpload: {
                 await this.insertRows(
                     group,
-                    "BandwidthUpload(id, nodeId, timestamp, type, bytesCount, contentId, contentDomain, ip)",
+                    "BandwidthUpload(id, nodeId, `timestamp`, `type`, bytesCount, contentId, ip, contentDomain)",
                     item =>
                         `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}', ${item.event.bytesCount}, '${
                             item.event.contentId
-                        }', '${item.event.contentDomain!}', '${item.event.ip}'),`
+                        }', '${item.event.ip}', '${item.event.contentDomain!}'),`
                 );
                 break;
             }
             case NodeEvents.BandwidthDownload: {
                 await this.insertRows(
                     group,
-                    "BandwidthDownload(id, nodeId, timestamp, type, bytesCount, contentId, ip)",
+                    "BandwidthDownload(id, nodeId, `timestamp`, `type`, bytesCount, contentId, ip)",
                     item =>
                         `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.type}', ${item.event.bytesCount}, '${
                             item.event.contentId
@@ -140,7 +142,7 @@ export class BandwidthHandler extends DataHandler {
                 item =>
                     `'${uuid()}', '${item.event.nodeId}', ${key === NodeEvents.BandwidthUploadStatistics ? item.event.bytesCount : 0}, ${
                         key === NodeEvents.BandwidthDownloadStatistics ? item.event.bytesCount : 0
-                    } AS tmp WHERE NOT EXISTS (SELECT nodeId FROM Nodestatistics WHERE nodeId='${item.event.nodeId}') LIMIT 1;`
+                    } AS tmp WHERE NOT EXISTS (SELECT nodeId FROM Nodestatistics WHERE nodeId='${item.event.nodeId}') LIMIT 1`
             );
         }
     }

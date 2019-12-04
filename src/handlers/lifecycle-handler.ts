@@ -127,13 +127,13 @@ export class LifecycleHandler extends DataHandler {
                         item =>
                             `('${uuid()}', '${item.event.nodeId}', ${item.event.timestamp}, '${item.event.arch}', '${
                                 item.event.release
-                            }', '${item.event.platform}', '${item.event.settingsVersion}', '${item.event.distro}', '${
+                            }', '${item.event.platform}', '${item.event.settingsVersion}', N'${item.event.distro}', N'${
                                 item.event.iface
-                            }', '${item.event.ifaceName}', '${item.event.ipv4}', '${item.event.ipv6}', ${item.event.pingIpv6}, '${
+                            }', N'${item.event.ifaceName}', '${item.event.ipv4}', '${item.event.ipv6}', ${item.event.pingIpv6}, '${
                                 item.event.mac
                             }', ${item.event.internal}, ${item.event.virtual}, '${item.event.operstate}', '${item.event.type}', '${
                                 item.event.duplex
-                            }', ${item.event.mtu}, ${item.event.speed}, ${item.event.interfacesLength}),`
+                            }', ${item.event.mtu}, '${item.event.speed}', ${item.event.interfacesLength}),`
                     );
                 }
                 if (key === NodeEvents.Metadata || key === NodeEvents.Ping) {

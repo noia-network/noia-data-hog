@@ -142,7 +142,7 @@ export class BandwidthHandler extends DataHandler {
                 item =>
                     `'${uuid()}', '${item.event.nodeId}', ${key === NodeEvents.BandwidthUploadStatistics ? item.event.bytesCount : 0}, ${
                         key === NodeEvents.BandwidthDownloadStatistics ? item.event.bytesCount : 0
-                    } AS tmp WHERE NOT EXISTS (SELECT nodeId FROM Nodestatistics WHERE nodeId='${item.event.nodeId}') LIMIT 1`
+                    } AS tmp WHERE NOT EXISTS (SELECT nodeId FROM Nodestatistics WHERE nodeId='${item.event.nodeId}') LIMIT 1;`
             );
         }
     }
